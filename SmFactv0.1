@@ -1,0 +1,82 @@
+00000011 pushext PSW     
+11111111
+11111011                         --save PSW                
+00000010 pushimm 0
+00000000
+00000101 popext PSW
+11111111
+11111011                         -- clear Z in PSW
+00000010 pushimm L(YY)
+00010101                         -- save L(YY)
+00000010 pushimm H(YY)
+00000000                         -- save H(YY)
+00000011 pushext B read port B
+11111111
+11111101
+00000011 pushext D read port D                         
+11111111
+11111111
+00000110 jnz                     --XX: #33
+00000000
+00100000                         --restore PSW
+00000101 YY: popext A writes top of stack to port A
+11111111
+11111100
+00000001    halt
+00000000 ------------subroutine multiply ---------------------------
+00000000            -- blank lines of code inserted to keep the structure of the
+00000000            -- code at time of debugging
+00000000
+00000000            -- result       00011101
+00000000            -- b coundown   00011110
+00000000            -- d tmp        00011111
+00000101 XX:popext -- D -> d
+00000000
+00011111
+00000101    popext -- B -> b
+00000000
+00011110
+00000010    pushimm 0
+00000000
+00000101    popext result
+00000000
+00011101                -- result = 0
+00000011    pushext -- d ========= LOOP ================
+00000000
+00011111
+00000011    pushext result
+00000000
+00011101
+00000111    add
+00000101    popext result
+00000000
+00011101
+00000010    pushimm 1
+00000001
+00000011    pushext b
+00000000
+00011110
+00001000    sub
+00000101    popext b
+00000000
+00011110
+00000110    jnz         -- jump to loop if not zero flag line #44
+00000000
+00101011
+00000010    pushimm 0
+00000000
+00000101    popext PSW
+11111111
+11111011
+00000101    popext XX+48
+00000000
+01010000
+00000101    popext XX+49
+00000000
+01010001
+00000011    pushext result
+00000000
+00011101
+00000110    jnz         -- return to main
+00000000
+00000000
